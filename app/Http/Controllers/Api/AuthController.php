@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthRequest;
+use App\Services\AuthService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AuthController extends Controller
 {
-    public function __construct()
+    public function __construct(private AuthService $authService)
     {
         // Middleware pour protéger la route de déconnexion
         $this->middleware('auth:api')->only('logout');
@@ -25,7 +26,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         //Vérification des identifiants
-        if (!$token = auth('api')->attempt($credentials)) {
+        if (!$token = $this->authService->authenticate($credentials)) {
             return response()->json(['error' => 'Email ou mot de passe incorrect'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
@@ -44,7 +45,7 @@ class AuthController extends Controller
      */
     public function logout() :JsonResponse
     {
-        auth('api')->logout();
+        $this->authService->logout();
         return response()->json(['message' => 'Déconnexion réussie'], JsonResponse::HTTP_OK);
     }
 }

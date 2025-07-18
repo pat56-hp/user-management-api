@@ -13,5 +13,5 @@ Route::prefix('auth')->group(function(){
 /*************************** Routes des utilisateurs ****************************   */
 Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('users', UserController::class);
-    Route::get('/change-status/{id}', [UserController::class, 'changeStatus']);
+    Route::get('/users/{id}/change-status', [UserController::class, 'changeStatus']);
 });

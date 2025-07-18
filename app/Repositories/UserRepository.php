@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use Illuminate\Contracts\Pagination\Paginator;
 
 class UserRepository{
     public function __construct(private User $model){}
@@ -10,10 +11,10 @@ class UserRepository{
     /**
      * Récupération de tous les utilisateurs avec option de recherche.
      *
-     * @param String|null $query
-     * @return void
+     * @param string|null $query
+     * @return Paginator
      */
-    public function getAll(String|null $query){
+    public function getAll(string|null $query) :Paginator{
         return $this->model->when($query, function($q) use ($query) {
                 $q->where(function ($q) use ($query) {
                     $q->where('nom', 'like', "%{$query}%")

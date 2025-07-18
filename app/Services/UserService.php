@@ -4,11 +4,10 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Repositories\UserRepository;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Contracts\Pagination\Paginator;
 
 /**
- * Opérations liées 
+ * Opérations liées aux users
  */
 class UserService
 {
@@ -18,10 +17,10 @@ class UserService
     /**
      * Récupération de tous les utilisateurs.
      *
-     * @param String|null $search
+     * @param string|null $search
      * @return void
      */
-    public function getAllUsers(String|null $search) :?Paginator
+    public function getAllUsers(string|null $search) :Paginator
     {
         return $this->userRepository->getAll($search);
     }
@@ -72,6 +71,12 @@ class UserService
         return $this->userRepository->deleteData($id);
     }
 
+    /**
+     * Modification du statut d'un utilisateur (actif/inactif).
+     *
+     * @param integer $id
+     * @return User
+     */
     public function changeUserStatus(int $id) :User
     {
         $user = $this->userRepository->findOrFail($id);

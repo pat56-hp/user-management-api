@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
+use App\Http\Resources\UserResource;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,14 +21,12 @@ class UserController extends Controller
      * Recuperation des utilisateurs.
      *
      * @param Request $request
-     * @return void
+     * @return AnonymousResourceCollection
      */
-    public function index(Request $request) :JsonResponse
+    public function index(Request $request) :\Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        return response()->json([
-            'data' => $this->userService->getAllUsers($request->query('search')),
-            'message' => 'Liste des utilisateurs récupérée avec succès'
-        ], JsonResponse::HTTP_OK);
+        $users = $this->userService->getAllUsers($request->query('search'));
+        return UserResource::collection($users);
     }
 
     /**
@@ -42,7 +41,7 @@ class UserController extends Controller
             // Création de l'utilisateur
             $user = $this->userService->createUser($data);
             return response()->json([
-                'data' => $user,
+                'data' => new UserResource($user),
                 'message' => 'Utilisateur créé avec succès'
             ], JsonResponse::HTTP_CREATED);
         } catch (\Throwable $th) {
@@ -67,7 +66,7 @@ class UserController extends Controller
             // Mise à jour de l'utilisateur
             $user = $this->userService->updateUser($id, $data);
             return response()->json([
-                'data' => $user,
+                'data' => new UserResource($user),
                 'message' => 'Utilisateur mis à jour avec succès'
             ], JsonResponse::HTTP_OK);
         } catch (\Throwable $th) {
@@ -117,7 +116,7 @@ class UserController extends Controller
             // Logique pour changer le statut de l'utilisateur
             $user = $this->userService->changeUserStatus($id);
             return response()->json([
-                'data' => $user,
+                'data' => new UserResource($user),
                 'message' => 'Statut de l\'utilisateur mis à jour avec succès'
             ], JsonResponse::HTTP_OK);
         } catch (\Throwable $th) {

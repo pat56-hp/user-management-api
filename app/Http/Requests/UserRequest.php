@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
-use GuzzleHttp\Psr7\Request;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Contracts\Validation\Validator;
 
 class UserRequest extends FormRequest
 {
@@ -25,16 +27,37 @@ class UserRequest extends FormRequest
         $rules = [
             'nom' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8',
             'role' => 'required|string|in:admin,user',
             'avatar' => 'nullable|image|max:2048',
         ];
 
-        if (Request::isMethod('PUT') || Request::isMethod('PATCH')) {
+        if (Request()->isMethod('PUT') || Request()->isMethod('PATCH')) {
             $rules['email'] = 'required|email|max:255|unique:users,email,' . $this->route('user');
-            $rules['password'] = 'nullable|string|min:8|confirmed';
+            $rules['password'] = 'nullable|string|min:8';
         }
 
         return $rules;
     }
+
+    /* public function wantsJson()
+    {
+        return true;
+    } */
+
+    /**
+     * Désactive la redirection
+     *
+     * @param Validator $validator
+     * @return void
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'message' => 'Oups, une erreur dans le formulaire',
+                'data' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY)
+        );
+    } 
 }

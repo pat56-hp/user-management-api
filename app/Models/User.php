@@ -16,7 +16,7 @@ class User extends Authenticatable implements JWTSubject
     use HasFactory, Notifiable;
 
     protected $appends = ['is_actif'];
-    protected $perPage = 2;
+    protected $perPage = 10;
 
     /**
      * The attributes that are mass assignable.
@@ -29,6 +29,7 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'role',
         'actif',
+        'avatar'
     ];
 
     /**
@@ -74,5 +75,19 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getIsActifAttribute() :string{
         return $this->actif == 1 ? 'Oui' : 'Non';
+    }
+
+    /**
+     * Renvoie l'URL de l'avatar
+     *
+     * @param [type] $value
+     * @return void
+     */
+    public function getAvatarAttribute($value)
+    {
+        if ($value) {
+            return asset($value);
+        }
+        return asset('images/default-avatar.jpg');
     }
 }

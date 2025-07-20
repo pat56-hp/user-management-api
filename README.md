@@ -1,61 +1,99 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# API de Gestion des Utilisateurs
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Ce projet est une API RESTful développée avec Laravel 12, permettant la gestion des utilisateurs et le suivi de leurs activités. Elle utilise l'authentification JWT et propose des endpoints sécurisés pour l'administration et la consultation des utilisateurs.
 
-## About Laravel
+## 🚀 Instructions d'installation
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+1. **Cloner le dépôt**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```bash
+git clone <repo-url> api
+cd api
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. **Installer les dépendances PHP**
 
-## Learning Laravel
+```bash
+composer install
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+3. **Copier le fichier d'environnement et générer la clé d'application**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+4. **Configurer la base de données**
 
-## Laravel Sponsors
+Par défaut, l'API utilise SQLite (voir `config/database.php`). Vous pouvez modifier `.env` pour utiliser MySQL ou PostgreSQL si besoin.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+5. **Générer la clé JWT**
 
-### Premium Partners
+```bash
+php artisan jwt:secret
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+6. **Lancer les migrations**
 
-## Contributing
+```bash
+php artisan migrate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+7. **Démarrer le serveur de développement**
 
-## Code of Conduct
+```bash
+php artisan serve
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🗂️ Structure du projet
 
-## Security Vulnerabilities
+-   `app/`
+    -   `Http/`
+        -   `Controllers/Api/` : Contrôleurs principaux (`UserController`, `AuthController`, `ActivityController`)
+        -   `Requests/` : Validation des requêtes (`UserRequest`, `AuthRequest`)
+        -   `Resources/` : Formatage des réponses API (`UserResource`, `ActivityResource`)
+    -   `Models/` : Modèles Eloquent (`User`, `Activity`)
+    -   `Repositories/` : Accès aux données (UserRepository, ActivityRepository)
+    -   `Services/` : Logique métier (UserService, AuthService, ActivityService, UploadService)
+-   `routes/api.php` : Définition des routes de l'API
+-   `database/migrations/` : Migrations pour les tables `users`, `activities`, etc.
+-   `public/avatars/` : Stockage des avatars utilisateurs
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🔒 Fonctionnalités principales
 
-## License
+-   Authentification JWT (connexion, déconnexion, profil)
+-   Gestion des utilisateurs (CRUD, activation/désactivation, upload d'un avatar, filtre dynamique)
+-   Suivi des activités des utilisateurs
+-   Validation avancée des entrées (FormRequest)
+-   Pagination et statistiques utilisateurs
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 🛠️ Technologies utilisées
+
+-   **PHP 8.2+**
+-   **Laravel 12**
+-   **JWT Auth** (`tymon/jwt-auth`)
+-   **Vite** (pour assets)
+-   **SQLite** (par défaut) ou MySQL/PostgreSQL
+
+## 📂 Exemple de routes API
+
+-   `POST /api/auth/login` : Connexion (email, mot de passe)
+-   `POST /api/auth/logout` : Déconnexion
+-   `GET /api/me` : Infos utilisateur connecté
+-   `GET /api/users` : Liste paginée des utilisateurs (recherche possible)
+-   `POST /api/users` : Création d'utilisateur
+-   `PUT /api/users/{id}` : Modification d'utilisateur
+-   `DELETE /api/users/{id}` : Suppression d'utilisateur
+-   `GET /api/users/{id}/change-status` : Activation/désactivation
+-   `GET /api/activities` : Historique des activités de l'utilisateur connecté
+
+## 📌 Remarques
+
+-   Les endpoints (sauf login) nécessitent un token JWT valide dans l'en-tête `Authorization: Bearer <token>`.
+-   Les avatars sont stockés dans `public/avatars/`.
+-   Les migrations créent les tables nécessaires à l'usage de l'API.
+
+---
+
+Pour toute question, consultez le code source ou ouvrez une issue.

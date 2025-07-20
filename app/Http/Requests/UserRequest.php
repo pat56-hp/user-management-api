@@ -33,7 +33,7 @@ class UserRequest extends FormRequest
         ];
 
         if (Request()->isMethod('PUT') || Request()->isMethod('PATCH')) {
-            $rules['email'] = 'required|email|max:255|unique:users,email,' . $this->route('user');
+            $rules['email'] = 'required|email|max:255|unique:users,email,' . $this->user?->id;
             $rules['password'] = 'nullable|string|min:8';
         }
 

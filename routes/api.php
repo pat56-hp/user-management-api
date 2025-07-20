@@ -16,7 +16,7 @@ Route::get('me', [AuthController::class, 'me']);
 /*************************** Routes des utilisateurs ****************************   */
 Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('users', UserController::class);
-    Route::get('/users/{id}/change-status', [UserController::class, 'changeStatus']);
+    Route::get('/users/{user}/change-status', [UserController::class, 'changeStatus']);
 });
 
 /*************************** Routes des activités ****************************   */

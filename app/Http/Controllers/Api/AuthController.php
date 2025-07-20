@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthRequest;
+use App\Http\Resources\UserResource;
 use App\Services\AuthService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -12,7 +13,7 @@ class AuthController extends Controller
     public function __construct(private AuthService $authService)
     {
         // Middleware pour protéger la route de déconnexion
-        $this->middleware('auth:api')->only('logout');
+        $this->middleware('auth:api')->except('login');
     }
 
     /**
@@ -27,7 +28,7 @@ class AuthController extends Controller
 
         //Vérification des identifiants
         if (!$token = $this->authService->authenticate($credentials)) {
-            return response()->json(['error' => 'Email ou mot de passe incorrect'], JsonResponse::HTTP_UNAUTHORIZED);
+            return response()->json(['message' => 'Email ou mot de passe incorrect'], JsonResponse::HTTP_UNAUTHORIZED);
         }
 
         //Authentification réussie, renvoi du token JWT et des informations de l'utilisateur
@@ -36,6 +37,15 @@ class AuthController extends Controller
             'access_type' => 'Bearer',
             'expires_in' => auth('api')->factory()->getTTL() * 60,
         ], JsonResponse::HTTP_OK);
+    }
+
+    /**
+     * Récupération des informations de l'utilisateur connecté
+     *
+     * @return void
+     */
+    public function me(){
+        return new UserResource(auth('api')->user());
     }
 
     /**

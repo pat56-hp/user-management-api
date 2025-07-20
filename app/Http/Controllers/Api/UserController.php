@@ -38,9 +38,10 @@ class UserController extends Controller
             'data' => UserResource::collection($users),
             'meta' => [
                 'current_page' => $users ? $users->currentPage() : null,
-                'last_page' => $users ? $users->lastPage() : null,
-                'per_page' => $users ? $users->perPage() : null,
+                'from' => $users ? $users->firstItem() : null,
+                'to' => $users ? $users->lastItem() : null,
                 'total' => $users ? $users->total() : null,
+                'last_page' => $users ? $users->lastPage() : null,
                 'first_page_url' => $users ? $users->url(1) : null,
                 'last_page_url' => $users ? $users->url($users->lastPage()) : null,
                 'next_page_url' => $users ? $users->nextPageUrl() : null,

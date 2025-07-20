@@ -19,9 +19,10 @@ class ActivityController extends Controller
             'data' => ActivityResource::collection($activities),
             'meta' => [
                 'current_page' => $activities ? $activities->currentPage() : null,
-                'last_page' => $activities ? $activities->lastPage() : null,
-                'per_page' => $activities ? $activities->perPage() : null,
+                'from' => $activities ? $activities->firstItem() : null,
+                'to' => $activities ? $activities->lastItem() : null,
                 'total' => $activities ? $activities->total() : null,
+                'last_page' => $activities ? $activities->lastPage() : null,
                 'first_page_url' => $activities ? $activities->url(1) : null,
                 'last_page_url' => $activities ? $activities->url($activities->lastPage()) : null,
                 'next_page_url' => $activities ? $activities->nextPageUrl() : null,

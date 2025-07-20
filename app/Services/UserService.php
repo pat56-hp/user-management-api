@@ -68,6 +68,12 @@ class UserService
         if (isset($data['avatar'])) {
             $data['avatar'] = $this->uploadService->uploadFile($data['avatar'], 'avatars');
         }
+        
+        if (isset($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
+        }else {
+            unset($data['password']);
+        }
 
         return $this->userRepository->updateData($data, $id);
     }

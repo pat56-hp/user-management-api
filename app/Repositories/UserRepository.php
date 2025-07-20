@@ -15,12 +15,12 @@ class UserRepository{
      * @return Paginator
      */
     public function getAll(string|null $query) :Paginator{
-        return $this->model->when($query, function($q) use ($query) {
+        return $this->model->when(!empty($query), function($q) use ($query) {
                 $q->where(function ($q) use ($query) {
                     $q->where('nom', 'like', "%{$query}%")
                     ->orWhere('email', 'like', "%{$query}%");
                 });
-            })->paginate()->withQueryString();
+            })->latest()->paginate()->withQueryString();
     }
 
     /**

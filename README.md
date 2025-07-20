@@ -46,13 +46,13 @@ php artisan migrate
 php artisan db:seed
 ```
 
-7. **Démarrer le serveur de développement**
+8. **Démarrer le serveur de développement**
 
 ```bash
 php artisan serve
 ```
 
-7. **Données utilisateur par defaut**
+9. **Données utilisateur par defaut**
 
 -   `Email: test2@example.com`
 -   `Password: password2`

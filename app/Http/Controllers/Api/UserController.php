@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
+use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,10 +24,24 @@ class UserController extends Controller
      * @param Request $request
      * @return AnonymousResourceCollection
      */
-    public function index(Request $request) :\Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(Request $request) :JsonResponse
     {
         $users = $this->userService->getAllUsers($request->query('search'));
-        return UserResource::collection($users);
+        return response()->json([
+            'data' => UserResource::collection($users),
+            'meta' => [
+                'current_page' => $users ? $users->currentPage() : null,
+                'last_page' => $users ? $users->lastPage() : null,
+                'per_page' => $users ? $users->perPage() : null,
+                'total' => $users ? $users->total() : null,
+                'first_page_url' => $users ? $users->url(1) : null,
+                'last_page_url' => $users ? $users->url($users->lastPage()) : null,
+                'next_page_url' => $users ? $users->nextPageUrl() : null,
+                'prev_page_url' => $users ? $users->previousPageUrl() : null,
+            ],
+            'statistics' => $this->userService->getStatistics(),
+            'message' => 'Liste des utilisateurs récupérée avec succès'
+        ], JsonResponse::HTTP_OK);
     }
 
     /**
@@ -59,12 +74,12 @@ class UserController extends Controller
      * @param integer $id
      * @return JsonResponse
      */
-    public function update(UserRequest $request, int $id) :JsonResponse
+    public function update(UserRequest $request, User $user) :JsonResponse
     {
         $data = $request->validated();
         try {
             // Mise à jour de l'utilisateur
-            $user = $this->userService->updateUser($id, $data);
+            $user = $this->userService->updateUser($user->id, $data);
             return response()->json([
                 'data' => new UserResource($user),
                 'message' => 'Utilisateur mis à jour avec succès'

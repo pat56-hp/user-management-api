@@ -13,6 +13,18 @@ class UserService
 {
     public function __construct(private UserRepository $userRepository, private UploadService $uploadService){}
 
+    /**
+     * Statistiques des utilisateurs.
+     *
+     * @return array
+     */
+    public function getStatistics(): array{
+        return [
+            'total_users' => $this->userRepository->count(),
+            'active_users' => $this->userRepository->count(['actif' => true]),
+            'inactive_users' => $this->userRepository->count(['actif' => false]),
+        ];
+    }
 
     /**
      * Récupération de tous les utilisateurs.

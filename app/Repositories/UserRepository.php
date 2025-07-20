@@ -69,4 +69,17 @@ class UserRepository{
         $user = $this->model->findOrFail($id);
         return $user->delete();
     }
+
+    /**
+     * Total des utilisateurs.
+     *
+     * @param array $condition
+     * @return integer
+     */
+    public function count($condition = []) :int
+    {
+        return $this->model->when(count($condition) > 0, function($q) use ($condition) {
+            $q->where($condition);
+        })->count();
+    }
 }

@@ -15,6 +15,11 @@ class UploadService
     {
         $filename = time() . '_' . $file->getClientOriginalName();
         $file->move(public_path($path), $filename);
+
+        logger()->info('File uploaded successfully', [
+            'path' => $path,
+            'filename' => $filename,
+        ]);
         
         return $path . '/' . $filename;
     }

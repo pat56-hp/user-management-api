@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Services;
-
 class AuthService
 {
     /**
@@ -12,6 +11,7 @@ class AuthService
      */
     public function authenticate(array $credentials) :mixed
     {
+        $credentials['actif'] = 1;
         return auth('api')->attempt($credentials);
     }
 

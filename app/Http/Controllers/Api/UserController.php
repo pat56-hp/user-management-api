@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\ActivityService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class UserController extends Controller
 {
-    public function __construct(private UserService $userService)
+    public function __construct(private UserService $userService, private ActivityService $activityService)
     {
         // Middleware pour protéger les routes de l'utilisateur
         $this->middleware('auth:api');
@@ -27,6 +28,12 @@ class UserController extends Controller
     public function index(Request $request) :JsonResponse
     {
         $users = $this->userService->getAllUsers($request->query('search'));
+        //Log d'activité
+        if (!empty($request->query('search'))) {
+            $this->activityService->logActivity('Filtre des utilisateurs');
+        }else{
+            $this->activityService->logActivity('Affichage de la liste des utilisateurs');
+        }
         return response()->json([
             'data' => UserResource::collection($users),
             'meta' => [
@@ -55,6 +62,8 @@ class UserController extends Controller
         try {
             // Création de l'utilisateur
             $user = $this->userService->createUser($data);
+            //Log
+            $this->activityService->logActivity('Création de l\'utilisateur ' . $user->nom);
             return response()->json([
                 'data' => new UserResource($user),
                 'message' => 'Utilisateur créé avec succès'
@@ -80,6 +89,8 @@ class UserController extends Controller
         try {
             // Mise à jour de l'utilisateur
             $user = $this->userService->updateUser($user->id, $data);
+            //Log
+            $this->activityService->logActivity('Modification de l\'utilisateur ' . $user?->nom);
             return response()->json([
                 'data' => new UserResource($user),
                 'message' => 'Utilisateur mis à jour avec succès'
@@ -98,13 +109,15 @@ class UserController extends Controller
      * @param integer $id
      * @return JsonResponse
      */
-    public function destroy(int $id) :JsonResponse
+    public function destroy(User $user) :JsonResponse
     {
         try {
             //Si la suppression est réussie
             //on retourne une réponse JSON avec un message de succès
             //sinon on lance une exception
-            if ($this->userService->deleteUser($id)) {
+            if ($this->userService->deleteUser($user->id)) {
+                //Log
+                $this->activityService->logActivity('Suppression de l\'utilisateur ' . $user->nom);
                 return response()->json([
                     'message' => 'Utilisateur supprimé avec succès'
                 ], JsonResponse::HTTP_OK);
@@ -125,11 +138,14 @@ class UserController extends Controller
      * @param integer $id
      * @return JsonResponse
      */
-    public function changeStatus(int $id) :JsonResponse
+    public function changeStatus(User $user) :JsonResponse
     {
         try {
             // Logique pour changer le statut de l'utilisateur
-            $user = $this->userService->changeUserStatus($id);
+            $user = $this->userService->changeUserStatus($user->id);
+            //Log
+            $msg = $user->actif == 1 ? 'Désactivation' : 'Activation';
+            $this->activityService->logActivity("{$msg} de l\'utilisateur " . $user->nom);
             return response()->json([
                 'data' => new UserResource($user),
                 'message' => 'Statut de l\'utilisateur mis à jour avec succès'

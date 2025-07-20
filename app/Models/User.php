@@ -16,7 +16,7 @@ class User extends Authenticatable implements JWTSubject
     use HasFactory, Notifiable;
 
     protected $appends = ['is_actif'];
-    protected $perPage = 10;
+    protected $perPage = 25;
 
     /**
      * The attributes that are mass assignable.
